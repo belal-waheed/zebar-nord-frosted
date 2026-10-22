@@ -1,174 +1,124 @@
-<p align="center">
-    <img src="https://raw.githubusercontent.com/nordtheme/nord/main/assets/nord-logo.png" width="80" alt="Nord Logo" />
-    <h2 align="center">Zebar Nord</h2>
-</p>
+<h1 align="center">Zebar Nord Frosted — Obsidian & Electric Violet Floating Islands</h1>
 
 <p align="center">
-A fully featured topbar styled with the beautiful, arctic <a href="https://www.nordtheme.com/">Nord</a> theme, built for <a href="https://github.com/glzr-io/zebar">Zebar</a> - the modern desktop widget platform.
+A bespoke, hardware-accelerated desktop topbar built with SolidJS and Tailwind CSS v4 for <a href="https://github.com/glzr-io/zebar">Zebar</a> and <a href="https://github.com/glzr-io/glazewm">GlazeWM</a> on Windows 11.
 </p>
 
-<p align="center">
-    <a href="https://www.nordtheme.com/">
-        <img src="https://img.shields.io/badge/theme-nord-5e81ac?style=for-the-badge" alt="Nord Theme" />
-    </a>
-</p>
+---
 
-> [!NOTE]
-> This project is a fork of [zebar-rose-pine-aqua](https://github.com/Marianinpb/zebar-rose-pine-aqua) which only modifies the theme to use **Nord**.
-
-## ✨ Features
-
-- **🎨 Nord Theme**: Beautiful color palette inspired by the popular, arctic Nord theme
-- **🖥️ Multi-Window Manager Support**: Compatible with GlazeWM, Komorebi, and vanilla window managers
-- **📊 System Monitoring & btop Integration**: Real-time CPU, memory, battery, network, and VPN/Tailscale status. Click CPU, Memory, or Network widgets to launch **btop** in Windows Terminal (`wt`).
-- **🎵 Media Controls**: Integrated media player controls with playback information
-- **🕐 Smart Clock**: Elegant date and time display
-- **⚡ Performance Optimized**: Built with SolidJS for blazing fast performance
-- **🎯 Responsive Design**: Adapts seamlessly to different screen sizes and resolutions
-
-## 🖼️ Preview
+## Preview
 
 <div align="center">
-  <img src="resources/preview-image.png" alt="Zebar Nord Preview" width="800"/>
+  <img src="resources/preview-image.png" alt="Zebar Nord Frosted Desktop Preview" width="100%"/>
 </div>
 
-## 🚀 Quick Start
+---
+
+## Architectural Highlights
+
+- **Three Segmented Floating Islands:** Deconstructs the conventional continuous edge-to-edge dark strip into three isolated islands over a 100% transparent root container (`html`, `body`, `#root`). Seamlessly harmonizes with high-key wallpapers, allowing desktop art and calligraphy to breathe naturally across the display.
+- **Obsidian & Electric Violet Design System:**
+  - Surface: Deep obsidian glass (`rgba(18, 17, 26, 0.94)`) with `backdrop-filter: blur(12px)`.
+  - Border: Electric violet aura perimeter (`rgba(139, 92, 246, 0.35)`).
+  - Ambient Shadow: Soft purple glow (`0 4px 16px rgba(139, 92, 246, 0.15)`).
+- **Left Island — GlazeWM Workspaces & Dynamic Window Title:**
+  - Dynamic Workspace Filtering: Displays only the focused workspace and occupied workspaces with open windows, eliminating static clutter.
+  - Active Workspace Pill: Solid electric violet badge (`#8b5cf6`) with crisp white bold typography.
+  - Unconstrained Dynamic Window Title: Window titles expand naturally to fit active application titles, bounded by a safe collision guardrail (`max-w-[calc(50vw-140px)]`) with clean ellipsis truncation before reaching the Center Island.
+- **Center Island — Persistent Mathematical Dead-Center Media Player:**
+  - Dead-Center Lock: Positioned via `absolute left-1/2 -translate-x-1/2`, mathematically locked to exactly `50vw` (true horizontal midpoint of the display), immune to displacement by long window titles or telemetry changes.
+  - Session Continuity: Caches the last known playback session so paused or stopped tracks remain visible with title, artist, progress bar, and hover play/pause controls.
+  - Idle Fallback: Renders a subtle fallback chip (`Music` vector icon + "No Media") to prevent island collapse when no track has played.
+- **Right Island — Streamlined Hardware Telemetry & Clock:**
+  - CPU Usage: Usage percentage chip (`#a78bfa`) with interactive Windows Task Manager launch on click.
+  - Memory Usage: Exact RAM percentage chip (`#f472b6`) with internal capacity bar and click-to-launch Task Manager support.
+  - Clock: Off-white temporal chip with electric violet `Clock` vector icon (`EEE MMM dd • HH:mm`).
+- **Offline Typography & Vector Iconography:** Pure offline system monospace typography (`Cascadia Code`, `Geist Mono`, `ui-monospace`) and Lucide vector icons. Zero external CDN dependencies. Zero emojis.
+
+---
+
+## Project Structure
+
+```text
+zebar-nord/
+├── dist/
+│   ├── glazewm/             # Production bundle for GlazeWM
+│   ├── komorebi/            # Production bundle for Komorebi
+│   └── vanilla/             # Production bundle for Vanilla/Standalone
+├── src/
+│   ├── components/
+│   │   └── bar/
+│   │       ├── background.tsx   # Obsidian floating island wrapper
+│   │       ├── cpu.tsx          # CPU monitor (Task Manager launch)
+│   │       ├── datetime.tsx     # Temporal clock badge
+│   │       ├── glazewm.tsx      # Dynamic workspaces & window title
+│   │       ├── media.tsx        # Persistent media player
+│   │       └── memory.tsx       # RAM percentage (Task Manager launch)
+│   ├── base.tsx             # Three-island relative flex container
+│   ├── glazewm.tsx          # GlazeWM entry point & layout definition
+│   ├── komorebi.tsx         # Komorebi entry point
+│   ├── vanilla.tsx          # Vanilla entry point
+│   └── index.css            # Obsidian & Electric Violet theme tokens
+├── resources/
+│   └── preview-image.png    # Live desktop preview capture
+├── deploy.js                # Automated multi-target pack deployer
+├── package.json             # Build scripts and dependencies
+└── zpack.json               # Zebar manifest configuration
+```
+
+---
+
+## Quick Start & Development
 
 ### Prerequisites
 
 - [Zebar](https://github.com/glzr-io/zebar) v3.0.0 or higher
-- Node.js 21+ and npm/pnpm/yarn
-- A supported window manager (GlazeWM, Komorebi, or None/Vanilla)
-- *(Optional)* [btop](https://github.com/aristocratos/btop) and [Windows Terminal](https://github.com/microsoft/terminal) for clicking CPU/Memory/Network widgets to open detailed system monitoring.
+- [GlazeWM](https://github.com/glzr-io/glazewm) v3.0.0 or higher
+- Node.js 20+ and pnpm
 
-### Installation
+### Installation & Deployment
 
-## 🛠️ Development
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/belal-waheed/zebar-nord-frosted.git
+   cd zebar-nord-frosted
+   ```
 
-1. **Clone the repository**
+2. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
 
-```bash
-git clone https://github.com/quangbhdang/zebar-nord.git
-cd zebar-nord
-```
+3. **Build and Deploy:**
+   ```bash
+   # Compiles glazewm, komorebi, and vanilla targets
+   pnpm run build
 
-2. **Install dependencies**
+   # Deploys bundles and zpack.json to ~/.glzr/zebar/packs/nord
+   node deploy.js
+   ```
 
-```bash
-npm install
-# or
-pnpm install
-# or
-yarn install
-```
+4. **Configure Zebar (`~/.glzr/zebar/settings.json`):**
+   ```json
+   {
+     "startupConfigs": [
+       {
+         "pack": "nord",
+         "widget": "glazewm",
+         "preset": "default"
+       }
+     ]
+   }
+   ```
 
-3. **Build the project**
-
-```bash
-npm run build
-```
-
-4. **Install in Zebar**
-   - Copy the files to your Zebar packs directory
-
-### Available Scripts
-
-| Command                  | Description                       |
-| ------------------------ | --------------------------------- |
-| `npm run dev:glazewm`    | Build and watch for GlazeWM mode  |
-| `npm run dev:komorebi`   | Build and watch for Komorebi mode |
-| `npm run dev:vanilla`    | Build and watch for vanilla mode  |
-| `npm run build:glazewm`  | Build for GlazeWM                 |
-| `npm run build:komorebi` | Build for Komorebi                |
-| `npm run build:vanilla`  | Build for vanilla                 |
-| `npm run build`          | Build all variants                |
-
-### Project Structure
-
-```
-zebar-nord/
-├── dist/
-│   ├── glazewm/                    # dist folder for GlazeWM
-│   ├── komorebi/                   # dist folder for Komorebi
-│   └── vanilla/                    # dist folder for Vanilla
-├── src/
-│   ├── components/
-│   │   └── bar/
-│   │       ├── background.tsx      # Background component
-│   │       ├── battery.tsx         # Battery status
-│   │       ├── cpu.tsx             # CPU usage
-│   │       ├── datetime.tsx        # Date and time
-│   │       ├── direction.tsx       # Direction indicators
-│   │       ├── glazewm.tsx         # GlazeWM specific
-│   │       ├── komorebi.tsx        # Komorebi specific
-│   │       ├── media.tsx           # Media controls
-│   │       ├── memory.tsx          # Memory usage
-│   │       ├── network.tsx         # Network status
-│   │       └── vpn.tsx             # VPN and Tailscale status
-│   ├── glazewm.tsx                 # GlazeWM entry point
-│   ├── komorebi.tsx                # Komorebi entry point
-│   └── vanilla.tsx                 # Vanilla entry point
-│   └── index.css                   # Shared css file
-├── resources/
-│   ├── preview-image-1.png         # Preview image 1
-│   └── preview-image-2.png         # Preview image 2
-├── glazewm.html                    # GlazeWM HTML entry point
-├── komorebi.html                   # Komorebi HTML entry point
-├── vanilla.html                    # Vanilla HTML entry point
-└── zpack.json                      # Zebar pack configuration
-```
-
-## 🎨 Customization
-
-The theme uses Tailwind CSS for styling, making it easy to customize colors, spacing, and layout. The main color palette follows the official Nord theme guidelines:
-
-- **Polar Night** (Dark theme base and backgrounds):
-  - `nord0` (`#2e3440`): Primary background
-  - `nord1` (`#3b4252`): Elevated widgets background
-  - `nord2` (`#434c5e`): Borders and selections
-  - `nord3` (`#4c566a`): Muted text and comments
-- **Snow Storm** (Typography and highlights):
-  - `nord4` (`#d8dee9`): Base text color
-  - `nord5` (`#e5e9f0`): Hover/elevated text
-  - `nord6` (`#eceff4`): Active / bold text
-- **Frost** (Accents and active states):
-  - `nord7` (`#8fbcbb`): Teal Frost (network status)
-  - `nord8` (`#88c0d0`): Ice Blue Frost (primary icons)
-  - `nord9` (`#81a1c1`): Soft Blue Frost (memory usage and VPN/Tailscale status)
-  - `nord10` (`#5e81ac`): Deep Blue Frost (battery status)
-- **Aurora** (Status colors and alerts):
-  - `nord11` (`#bf616a`): Red Aurora (high CPU, low battery)
-  - `nord12` (`#d08770`): Orange Aurora (RSS feed)
-  - `nord13` (`#ebcb8b`): Yellow Aurora (battery mid-charge)
-  - `nord14` (`#a3be8c`): Green Aurora (battery good, low CPU)
-  - `nord15` (`#b48ead`): Purple Aurora (media playback)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Nord Theme](https://www.nordtheme.com/) for the beautiful color palette
-- [zebar-rose-pine-aqua](https://github.com/Marianinpb/zebar-rose-pine-aqua) for the original codebase
-- [Zebar](https://github.com/glzr-io/zebar) for the amazing desktop widget platform
-- [SolidJS](https://solidjs.com) for the reactive framework
-- [Tailwind CSS](https://tailwindcss.com) for the utility-first CSS framework
-
-## 🔗 Links
-
-- [Zebar Documentation](https://github.com/glzr-io/zebar)
-- [Nord Theme Color Palette](https://www.nordtheme.com/docs/colors-and-palettes)
-- [SolidJS Documentation](https://solidjs.com)
-- [Original Repo (rose-pine-aqua)](https://github.com/Marianinpb/zebar-rose-pine-aqua)
-- [Issues](https://github.com/quangbhdang/zebar-nord/issues)
+5. **Reload GlazeWM and Zebar:**
+   Press `Alt + Shift + R` or execute:
+   ```powershell
+   glazewm.exe command wm-reload-config
+   ```
 
 ---
 
-<div align="center">
-  Made with ❤️ for the Zebar community
-</div>
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
