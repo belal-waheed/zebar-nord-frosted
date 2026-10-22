@@ -50,13 +50,12 @@ render(() => <App />, document.getElementById("root")!);
 
 function App() {
   const persistKey = "nord:layout:komorebi:v4";
-  let initial = defaultLayout;
   try {
-    const saved = localStorage.getItem(persistKey);
-    if (saved) initial = JSON.parse(saved) as Layout;
+    localStorage.removeItem(persistKey);
+    localStorage.removeItem("zrp:layout:komorebi");
   } catch {}
 
-  const [layout, setLayout] = createSignal<Layout>(initial);
+  const [layout, setLayout] = createSignal<Layout>(defaultLayout);
   const searchParams = new URLSearchParams(window.location.search);
   const [configOpen, setConfigOpen] = createSignal(searchParams.has("config"));
   const [rssOpen, setRssOpen] = createSignal(searchParams.has("rss"));

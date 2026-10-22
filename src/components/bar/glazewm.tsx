@@ -63,8 +63,8 @@ function Glazewm() {
 
   return (
     <Show when={glazewmSig()}>
-      <div class="flex items-center gap-1.5 select-none">
-        <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1.5 select-none min-w-0">
+        <div class="flex items-center gap-1 shrink-0">
           <For each={visibleWorkspaces()}>
             {(workspace) => (
               <button
@@ -86,11 +86,11 @@ function Glazewm() {
         </div>
 
         <Show when={activeWindowTitle()}>
-          <div class="flex items-center gap-1.5 pl-1 whitespace-nowrap">
-            <span class="text-zinc-600 text-xs font-semibold select-none">/</span>
+          <div class="flex items-center gap-1.5 pl-1 min-w-0 overflow-hidden">
+            <span class="text-zinc-600 text-xs font-semibold select-none shrink-0">/</span>
             <AppWindow size={13} class="text-[#8b5cf6] shrink-0" />
             <span
-              class="text-xs text-[#f4f4f5] font-medium whitespace-nowrap"
+              class="text-xs text-[#f4f4f5] font-medium truncate whitespace-nowrap"
               title={activeWindowTitle() || ""}
             >
               {activeWindowTitle()}

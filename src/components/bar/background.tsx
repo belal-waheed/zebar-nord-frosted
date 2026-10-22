@@ -11,7 +11,7 @@ const Background = (props: BackgroundProps) => {
   return (
     <div
       class={cn(
-        "obsidian-island px-3 py-1 flex items-center h-[30px] rounded-lg gap-2",
+        "obsidian-island px-3 py-1 flex items-center h-[30px] rounded-lg gap-2 max-w-full min-w-0",
         {
           "justify-start": props.align === "left",
           "justify-center": props.align === "center",

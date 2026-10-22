@@ -7,7 +7,7 @@ import Media from "./components/bar/media";
 import Network from "./components/bar/network";
 import Datetime from "./components/bar/datetime";
 import Glazewm from "./components/bar/glazewm";
-import { createMemo, Index, Match, onCleanup, onMount, Switch } from "solid-js";
+import { Index, Match, onCleanup, onMount, Switch } from "solid-js";
 import Komorebi from "./components/bar/komorebi";
 import { cn } from "./lib/utils";
 import { ProvidersProvider } from "./lib/providers-context";
@@ -46,18 +46,6 @@ const Base = (props: {
   layout: Layout;
   setLayout: (layout: Layout) => void;
 }) => {
-  const gridTemplateColumns = createMemo(() =>
-    props.layout.columns
-      .map((col) => {
-        if (col.width === "auto") {
-          return col.align === "center" ? "auto" : "1fr";
-        }
-        if (typeof col.width === "number") return `${col.width}fr`;
-        return "1fr";
-      })
-      .join(" ")
-  );
-
   const onDoubleClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -73,47 +61,37 @@ const Base = (props: {
     } catch {}
   };
 
-  const onStorage = () => {
-    try {
-      const saved = localStorage.getItem(`zrp:layout:${props.wm}`);
-      if (saved) {
-        props.setLayout(JSON.parse(saved));
-      }
-    } catch (err) {
-      console.error("Failed to parse layout from storage:", err);
-    }
-  };
-
   onMount(() => {
     document.addEventListener("dblclick", onDoubleClick);
-    window.addEventListener("storage", onStorage);
   });
 
   onCleanup(() => {
     document.removeEventListener("dblclick", onDoubleClick);
-    window.removeEventListener("storage", onStorage);
   });
 
   return (
     <ProvidersProvider>
       <div
-        class="w-full h-[34px] px-2 grid items-center select-none bg-transparent"
+        class="w-full h-[34px] px-2 relative flex items-center justify-between select-none bg-transparent"
         style={{
           "margin-top": `${props.layout.topMargin ?? 0}px`,
           "margin-left": `${props.layout.xMargin ?? 0}px`,
           "margin-right": `${props.layout.xMargin ?? 0}px`,
-          "grid-template-columns": gridTemplateColumns(),
           height: `34px`,
         }}
       >
         <Index each={props.layout.columns}>
           {(column) => (
             <div
-              class={cn("flex items-center h-full", {
-                "justify-start": column().align === "left",
-                "justify-end": column().align === "right",
-                "justify-center": column().align === "center",
-              })}
+              class={cn(
+                "h-full flex items-center",
+                column().align === "left" &&
+                  "justify-start max-w-[calc(50vw-140px)] min-w-0",
+                column().align === "center" &&
+                  "absolute left-1/2 -translate-x-1/2 justify-center pointer-events-auto",
+                column().align === "right" &&
+                  "justify-end max-w-[calc(50vw-140px)] ml-auto"
+              )}
             >
               <Background align={column().align} corners={column().rounded}>
                 <Index each={column().components}>
