@@ -40,7 +40,7 @@ function Cpu() {
             style={{ width: `${Math.min(100, Math.max(0, usage()))}%` }}
           />
         </div>
-        <span class="text-[#f4f4f5] font-medium text-[11px] min-w-[24px]">
+        <span class="text-[#f4f4f5] font-semibold text-xs min-w-[28px] tracking-tight">
           {usage()}%
         </span>
       </div>

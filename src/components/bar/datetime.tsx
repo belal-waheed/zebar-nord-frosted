@@ -12,16 +12,18 @@ function Datetime(props: { noIcon?: boolean }) {
     onCleanup(() => clearInterval(interval));
   });
 
-  // Format: 'Wed Oct 21 • 21:05'
+  // Format: 'Thu Oct 22 • 9:35 PM'
   function formattedDateTime() {
     const date = now();
     const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
     const month = date.toLocaleDateString("en-US", { month: "short" });
     const day = date.getDate();
-    const hours = String(date.getHours()).padStart(2, "0");
+    let hours = date.getHours();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
     const minutes = String(date.getMinutes()).padStart(2, "0");
 
-    return `${weekday} ${month} ${day} • ${hours}:${minutes}`;
+    return `${weekday} ${month} ${day} • ${hours}:${minutes} ${ampm}`;
   }
 
   return (

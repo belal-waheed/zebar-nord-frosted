@@ -33,7 +33,7 @@ function Memory() {
             style={{ width: `${Math.min(100, Math.max(0, memoryStats().percent))}%` }}
           />
         </div>
-        <span class="text-[#f4f4f5] font-medium text-[11px] min-w-[28px]">
+        <span class="text-[#f4f4f5] font-semibold text-xs min-w-[28px] tracking-tight">
           {memoryStats().percent}%
         </span>
       </div>
