@@ -1,8 +1,6 @@
 import { cn } from "../../lib/utils";
 import {
-  Match,
   Show,
-  Switch,
   createEffect,
   createMemo,
   createSignal,
@@ -32,8 +30,10 @@ function Media() {
 
   // Sticky session locking
   const [lockedSessionId, setLockedSessionId] = createSignal<string | null>(null);
+  // Remember last known session so even if media provider drops the session on stop/pause, it remains visible
+  const [lastKnownSession, setLastKnownSession] = createSignal<MediaSession | null>(null);
 
-  const session = createMemo(() => {
+  const activeSession = createMemo(() => {
     const m = mediaSig();
     if (!m) return null;
 
@@ -67,12 +67,19 @@ function Media() {
     const fallback = validSessions[0] || null;
     if (fallback) {
       setLockedSessionId(fallback.sessionId);
-    } else {
-      setLockedSessionId(null);
     }
 
     return fallback;
   });
+
+  createEffect(() => {
+    const s = activeSession();
+    if (s) {
+      setLastKnownSession(s);
+    }
+  });
+
+  const session = createMemo(() => activeSession() || lastKnownSession());
 
   // Position interpolation for background tabs
   const [localPos, setLocalPos] = createSignal(0);
@@ -90,7 +97,7 @@ function Media() {
 
   onMount(() => {
     const timer = setInterval(() => {
-      const s = session();
+      const s = activeSession();
       if (s && s.isPlaying) {
         const elapsed = (Date.now() - lastFetchTime) / 1000;
         const currentPos = basePosition + elapsed;
@@ -101,38 +108,17 @@ function Media() {
     onCleanup(() => clearInterval(timer));
   });
 
-  const isPlaying = () => Boolean(session()?.isPlaying);
-
-  // Keep visible briefly after pausing to allow resume/interaction
-  const [recentlyPaused, setRecentlyPaused] = createSignal(false);
-  let pauseTimer: any = null;
-
-  createEffect(() => {
-    if (isPlaying()) {
-      if (pauseTimer) clearTimeout(pauseTimer);
-      setRecentlyPaused(true);
-    } else {
-      pauseTimer = setTimeout(() => {
-        setRecentlyPaused(false);
-      }, 5000);
-    }
-  });
-
-  onCleanup(() => {
-    if (pauseTimer) clearTimeout(pauseTimer);
-  });
-
-  const shouldShow = () => Boolean(session() && (isPlaying() || recentlyPaused()));
+  const isPlaying = () => Boolean(activeSession()?.isPlaying);
 
   const getTitle = () => {
     const t = session()?.title?.trim();
     if (!t) return "Unknown Title";
-    return t.length > 20 ? `${t.slice(0, 18)}...` : t;
+    return t.length > 24 ? `${t.slice(0, 22)}...` : t;
   };
 
   const getArtist = () => {
     const a = session()?.artist?.trim() || "";
-    return a.length > 15 ? `${a.slice(0, 13)}...` : a;
+    return a.length > 18 ? `${a.slice(0, 16)}...` : a;
   };
 
   const getProgressPercent = () => {
@@ -169,7 +155,20 @@ function Media() {
   };
 
   return (
-    <Show when={shouldShow()}>
+    <Show
+      when={session()}
+      fallback={
+        <div
+          class={cn(
+            "h-6 flex items-center justify-center gap-1.5 text-[#ec4899]/70 bg-[#ec4899]/10 border border-[#ec4899]/20 rounded-md px-2 select-none text-xs font-medium"
+          )}
+          title="No Media Active"
+        >
+          <Music size={13} class="shrink-0" />
+          <span>No Media</span>
+        </div>
+      }
+    >
       <div
         class={cn(
           "h-6 flex group items-center justify-center overflow-hidden gap-1.5 text-[#ec4899] bg-[#ec4899]/15 border border-[#ec4899]/30 rounded-md px-2 relative cursor-pointer select-none transition-all duration-200"
@@ -192,7 +191,7 @@ function Media() {
               style={{
                 width: `${getProgressPercent()}%`,
               }}
-            ></div>
+            />
           </div>
         </div>
 

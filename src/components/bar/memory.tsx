@@ -24,7 +24,7 @@ function Memory() {
           "h-6 px-2 rounded-md flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer text-xs select-none transition-colors duration-150 group"
         )}
         onClick={() => openTaskManager(glazewm())}
-        title={`RAM Usage: ${memoryStats().usedGb} GB / ${memoryStats().totalGb} GB (${memoryStats().percent}%) (Click to open Task Manager)`}
+        title={`RAM Usage: ${memoryStats().percent}% (${memoryStats().usedGb} GB / ${memoryStats().totalGb} GB) (Click to open Task Manager)`}
       >
         <MemoryStick size={13} class="shrink-0 text-[#f472b6]" />
         <div class="w-8 h-1.5 bg-white/10 rounded-full overflow-hidden">
@@ -34,7 +34,7 @@ function Memory() {
           />
         </div>
         <span class="text-[#f4f4f5] font-medium text-[11px] min-w-[28px]">
-          {memoryStats().usedGb}G
+          {memoryStats().percent}%
         </span>
       </div>
     </Show>

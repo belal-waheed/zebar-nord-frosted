@@ -12,24 +12,6 @@ const defaultLayout: Layout = {
   columns: [
     {
       align: "left",
-      width: 1,
-      components: [
-        {
-          type: "direction",
-        },
-        {
-          type: "memory",
-        },
-        {
-          type: "cpu",
-        },
-        {
-          type: "battery",
-        },
-      ],
-    },
-    {
-      align: "center",
       width: "auto",
       components: [
         {
@@ -38,17 +20,23 @@ const defaultLayout: Layout = {
       ],
     },
     {
-      align: "right",
-      width: 1,
+      align: "center",
+      width: "auto",
       components: [
         {
           type: "media",
         },
+      ],
+    },
+    {
+      align: "right",
+      width: "auto",
+      components: [
         {
-          type: "network",
+          type: "cpu",
         },
         {
-          type: "vpn",
+          type: "memory",
         },
         {
           type: "datetime",
@@ -61,7 +49,7 @@ const defaultLayout: Layout = {
 render(() => <App />, document.getElementById("root")!);
 
 function App() {
-  const persistKey = "zrp:layout:komorebi";
+  const persistKey = "nord:layout:komorebi:v4";
   let initial = defaultLayout;
   try {
     const saved = localStorage.getItem(persistKey);

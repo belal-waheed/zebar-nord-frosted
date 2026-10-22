@@ -61,12 +61,6 @@ function Glazewm() {
     return null;
   });
 
-  const displayTitle = createMemo(() => {
-    const title = activeWindowTitle();
-    if (!title) return null;
-    return title.length > 36 ? `${title.slice(0, 33)}...` : title;
-  });
-
   return (
     <Show when={glazewmSig()}>
       <div class="flex items-center gap-1.5 select-none">
@@ -91,15 +85,15 @@ function Glazewm() {
           </For>
         </div>
 
-        <Show when={displayTitle()}>
-          <div class="flex items-center gap-1.5 pl-1 max-w-[280px] overflow-hidden text-ellipsis whitespace-nowrap">
+        <Show when={activeWindowTitle()}>
+          <div class="flex items-center gap-1.5 pl-1 whitespace-nowrap">
             <span class="text-zinc-600 text-xs font-semibold select-none">/</span>
             <AppWindow size={13} class="text-[#8b5cf6] shrink-0" />
             <span
-              class="text-xs text-[#f4f4f5] truncate font-medium"
+              class="text-xs text-[#f4f4f5] font-medium whitespace-nowrap"
               title={activeWindowTitle() || ""}
             >
-              {displayTitle()}
+              {activeWindowTitle()}
             </span>
           </div>
         </Show>

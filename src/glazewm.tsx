@@ -26,9 +26,6 @@ const defaultLayout: Layout = {
         {
           type: "media",
         },
-        {
-          type: "datetime",
-        },
       ],
     },
     {
@@ -42,10 +39,7 @@ const defaultLayout: Layout = {
           type: "memory",
         },
         {
-          type: "battery",
-        },
-        {
-          type: "network",
+          type: "datetime",
         },
       ],
     },
@@ -55,7 +49,7 @@ const defaultLayout: Layout = {
 render(() => <App />, document.getElementById("root")!);
 
 function App() {
-  const persistKey = "nord:layout:glazewm:v3";
+  const persistKey = "nord:layout:glazewm:v4";
   let initial = defaultLayout;
   try {
     const saved = localStorage.getItem(persistKey);

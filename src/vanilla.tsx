@@ -12,19 +12,10 @@ const defaultLayout: Layout = {
   columns: [
     {
       align: "left",
-      width: 1,
+      width: "auto",
       components: [
         {
-          type: "direction",
-        },
-        {
-          type: "memory",
-        },
-        {
-          type: "cpu",
-        },
-        {
-          type: "battery",
+          type: "wm",
         },
       ],
     },
@@ -33,22 +24,22 @@ const defaultLayout: Layout = {
       width: "auto",
       components: [
         {
-          type: "datetime",
+          type: "media",
         },
       ],
     },
     {
       align: "right",
-      width: 1,
+      width: "auto",
       components: [
         {
-          type: "media",
+          type: "cpu",
         },
         {
-          type: "network",
+          type: "memory",
         },
         {
-          type: "vpn",
+          type: "datetime",
         },
       ],
     },
@@ -58,7 +49,7 @@ const defaultLayout: Layout = {
 render(() => <App />, document.getElementById("root")!);
 
 function App() {
-  const persistKey = "zrp:layout:vanilla";
+  const persistKey = "nord:layout:vanilla:v4";
   let initial = defaultLayout;
   try {
     const saved = localStorage.getItem(persistKey);
