@@ -1,7 +1,23 @@
 import { cn } from "../../lib/utils";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { useProviders } from "../../lib/providers-context";
 import * as zebar from "zebar";
+import { AppWindow } from "lucide-solid";
+
+function hasOpenWindows(workspace: any, allWindows?: any[]): boolean {
+  if (Array.isArray(workspace.displayedWindows) && workspace.displayedWindows.length > 0) {
+    return true;
+  }
+  if (Array.isArray(workspace.children) && workspace.children.length > 0) {
+    return true;
+  }
+  if (allWindows && Array.isArray(allWindows)) {
+    return allWindows.some(
+      (w) => w.parentId === workspace.id || (w as any).workspaceId === workspace.id
+    );
+  }
+  return false;
+}
 
 function Glazewm() {
   const [glazewmSig, setGlazewmSig] = createSignal<
@@ -13,63 +29,80 @@ function Glazewm() {
     setGlazewmSig(glazewm());
   });
 
+  const visibleWorkspaces = createMemo(() => {
+    const g = glazewmSig();
+    if (!g || !g.currentWorkspaces) return [];
+
+    const filtered = g.currentWorkspaces.filter(
+      (ws) => ws.hasFocus || hasOpenWindows(ws, g.allWindows)
+    );
+
+    if (filtered.length === 0) {
+      const focused = g.currentWorkspaces.find((ws) => ws.hasFocus) || g.currentWorkspaces[0];
+      return focused ? [focused] : [];
+    }
+    return filtered;
+  });
+
+  const activeWindowTitle = createMemo(() => {
+    const g = glazewmSig();
+    if (!g) return null;
+
+    const fc = g.focusedContainer as any;
+    if (fc && fc.type === "window") {
+      return (fc.title || fc.processName || "").trim();
+    }
+
+    const focusedWindow = g.allWindows?.find((w) => w.hasFocus);
+    if (focusedWindow) {
+      return (focusedWindow.title || focusedWindow.processName || "").trim();
+    }
+
+    return null;
+  });
+
+  const displayTitle = createMemo(() => {
+    const title = activeWindowTitle();
+    if (!title) return null;
+    return title.length > 36 ? `${title.slice(0, 33)}...` : title;
+  });
+
   return (
     <Show when={glazewmSig()}>
-      <div class="flex items-center justify-center gap-1">
-        <For each={glazewmSig()!.currentWorkspaces}>
-          {(workspace) => (
-            <button
-              onClick={() =>
-                glazewmSig()!.runCommand(`focus --workspace ${workspace.name}`)
-              }
-              class={cn(
-                "flex items-center justify-center rounded-full p-1 group",
-                {
-                  "bg-[var(--ws-1)]/10": workspace.name === "1",
-                  "bg-[var(--ws-2)]/10": workspace.name === "2",
-                  "bg-[var(--ws-3)]/10": workspace.name === "3",
-                  "bg-[var(--ws-4)]/10": workspace.name === "4",
-                  "bg-[var(--ws-5)]/10": workspace.name === "5",
-                  "bg-[var(--ws-6)]/10": workspace.name === "6",
-                  "bg-[var(--ws-7)]/10": workspace.name === "7",
-                  "bg-[var(--ws-8)]/10": workspace.name === "8",
-                  "bg-[var(--ws-9)]/10": workspace.name === "9",
-                  focused: workspace.hasFocus,
+      <div class="flex items-center gap-1.5 select-none">
+        <div class="flex items-center gap-1">
+          <For each={visibleWorkspaces()}>
+            {(workspace) => (
+              <button
+                onClick={() =>
+                  glazewmSig()!.runCommand(`focus --workspace ${workspace.name}`)
                 }
-              )}
-            >
-              <div
-                id={workspace.name}
+                title={`Workspace ${workspace.displayName ?? workspace.name}`}
                 class={cn(
-                  "flex items-center justify-center p-0.5 text-base w-6 h-6 rounded-full border-3 bg-transparent font-extrabold",
-                  {
-                    "text-[var(--ws-1)] border-[var(--ws-1)] group-[.focused]:bg-[var(--ws-1)]":
-                      workspace.name === "1",
-                    "text-[var(--ws-2)] border-[var(--ws-2)] group-[.focused]:bg-[var(--ws-2)]":
-                      workspace.name === "2",
-                    "text-[var(--ws-3)] border-[var(--ws-3)] group-[.focused]:bg-[var(--ws-3)]":
-                      workspace.name === "3",
-                    "text-[var(--ws-4)] border-[var(--ws-4)] group-[.focused]:bg-[var(--ws-4)]":
-                      workspace.name === "4",
-                    "text-[var(--ws-5)] border-[var(--ws-5)] group-[.focused]:bg-[var(--ws-5)]":
-                      workspace.name === "5",
-                    "text-[var(--ws-6)] border-[var(--ws-6)] group-[.focused]:bg-[var(--ws-6)]":
-                      workspace.name === "6",
-                    "text-[var(--ws-7)] border-[var(--ws-7)] group-[.focused]:bg-[var(--ws-7)]":
-                      workspace.name === "7",
-                    "text-[var(--ws-8)] border-[var(--ws-8)] group-[.focused]:bg-[var(--ws-8)]":
-                      workspace.name === "8",
-                    "text-[var(--ws-9)] border-[var(--ws-9)] group-[.focused]:bg-[var(--ws-9)]":
-                      workspace.name === "9",
-                    "text-[var(--base)]": workspace.hasFocus,
-                  }
+                  "h-6 min-w-6 px-2 rounded-md flex items-center justify-center text-xs font-medium transition-all duration-150",
+                  workspace.hasFocus
+                    ? "bg-[#8b5cf6] text-white font-bold shadow-[0_0_8px_rgba(139,92,246,0.5)] cursor-default"
+                    : "bg-white/5 border border-white/10 text-[#d4d4d8] hover:bg-white/15 hover:text-white"
                 )}
               >
                 {workspace.displayName ?? workspace.name}
-              </div>
-            </button>
-          )}
-        </For>
+              </button>
+            )}
+          </For>
+        </div>
+
+        <Show when={displayTitle()}>
+          <div class="flex items-center gap-1.5 pl-1 max-w-[280px] overflow-hidden text-ellipsis whitespace-nowrap">
+            <span class="text-zinc-600 text-xs font-semibold select-none">/</span>
+            <AppWindow size={13} class="text-[#8b5cf6] shrink-0" />
+            <span
+              class="text-xs text-[#f4f4f5] truncate font-medium"
+              title={activeWindowTitle() || ""}
+            >
+              {displayTitle()}
+            </span>
+          </div>
+        </Show>
       </div>
     </Show>
   );

@@ -14,7 +14,7 @@ export interface ProvidersValue {
   media: Accessor<zebar.MediaOutput | undefined>;
   network: Accessor<zebar.NetworkOutput | undefined>;
   glazewm: Accessor<zebar.GlazeWmOutput | undefined>;
-  komorebi: Accessor<zebar.KomorebiOutput | undefined>;
+  komorebi?: Accessor<zebar.KomorebiOutput | undefined>;
 }
 
 const ProvidersContext = createContext<ProvidersValue>();
@@ -27,7 +27,6 @@ export function ProvidersProvider(props: { children: JSX.Element }) {
     media: { type: "media", refreshInterval: 1000 },
     network: { type: "network" },
     glazewm: { type: "glazewm" },
-    komorebi: { type: "komorebi" },
   });
 
   const [cpu, setCpu] = createSignal<zebar.CpuOutput | undefined>(
@@ -48,9 +47,7 @@ export function ProvidersProvider(props: { children: JSX.Element }) {
   const [glazewm, setGlazewm] = createSignal<zebar.GlazeWmOutput | undefined>(
     providers.outputMap.glazewm
   );
-  const [komorebi, setKomorebi] = createSignal<
-    zebar.KomorebiOutput | undefined
-  >(providers.outputMap.komorebi);
+  const [komorebi] = createSignal<zebar.KomorebiOutput | undefined>(undefined);
 
   providers.onOutput((map) => {
     if ("cpu" in map) setCpu(map.cpu);
@@ -59,7 +56,6 @@ export function ProvidersProvider(props: { children: JSX.Element }) {
     if ("media" in map) setMedia(map.media);
     if ("network" in map) setNetwork(map.network);
     if ("glazewm" in map) setGlazewm(map.glazewm);
-    if ("komorebi" in map) setKomorebi(map.komorebi);
   });
 
   const value: ProvidersValue = {

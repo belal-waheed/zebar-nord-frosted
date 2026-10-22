@@ -49,9 +49,11 @@ const Base = (props: {
   const gridTemplateColumns = createMemo(() =>
     props.layout.columns
       .map((col) => {
-        if (col.width === "auto") return "auto";
+        if (col.width === "auto") {
+          return col.align === "center" ? "auto" : "1fr";
+        }
         if (typeof col.width === "number") return `${col.width}fr`;
-        return "auto";
+        return "1fr";
       })
       .join(" ")
   );
@@ -95,19 +97,19 @@ const Base = (props: {
   return (
     <ProvidersProvider>
       <div
-        class="grid gap-2"
+        class="w-full h-[34px] px-2 grid items-center select-none bg-transparent"
         style={{
-          "margin-top": `${props.layout.topMargin}px`,
-          "margin-left": `${props.layout.xMargin}px`,
-          "margin-right": `${props.layout.xMargin}px`,
+          "margin-top": `${props.layout.topMargin ?? 0}px`,
+          "margin-left": `${props.layout.xMargin ?? 0}px`,
+          "margin-right": `${props.layout.xMargin ?? 0}px`,
           "grid-template-columns": gridTemplateColumns(),
-          height: `40px`,
+          height: `34px`,
         }}
       >
         <Index each={props.layout.columns}>
           {(column) => (
             <div
-              class={cn("flex items-center gap-2", {
+              class={cn("flex items-center h-full", {
                 "justify-start": column().align === "left",
                 "justify-end": column().align === "right",
                 "justify-center": column().align === "center",

@@ -7,24 +7,15 @@ import ConfigMenu from "./components/config-menu";
 import RssWindow from "./components/rss-window";
 
 const defaultLayout: Layout = {
-  topMargin: 4,
-  xMargin: 4,
+  topMargin: 0,
+  xMargin: 0,
   columns: [
     {
       align: "left",
-      width: 1,
+      width: "auto",
       components: [
         {
-          type: "direction",
-        },
-        {
-          type: "memory",
-        },
-        {
-          type: "cpu",
-        },
-        {
-          type: "battery",
+          type: "wm",
         },
       ],
     },
@@ -33,63 +24,28 @@ const defaultLayout: Layout = {
       width: "auto",
       components: [
         {
-          type: "wm",
+          type: "media",
         },
         {
-          type: "rss",
-          options: {
-            feeds: [
-              {
-                url: "https://papers.takara.ai/api/feed",
-                maxItems: 20,
-                maxAge: 3,
-                useCorsProxy: true,
-              },
-              {
-                url: "https://arxiv.org/rss/cs.LG",
-                maxItems: 20,
-                maxAge: 3,
-                useCorsProxy: true,
-              },
-              {
-                url: "https://cvefeed.io/rssfeed/severity/high.xml",
-                maxItems: 20,
-                maxAge: 3,
-                useCorsProxy: true,
-              },
-              {
-                url: "https://pypi.org/rss/updates.xml",
-                maxItems: 20,
-                maxAge: 3,
-                useCorsProxy: true,
-              },
-            ],
-            refreshInterval: 300000,
-            maxItemsPerFeed: 30,
-            titleLength: 60,
-            maxAge: 7,
-            cleanupInterval: 30,
-            useCorsProxy: true,
-            corsProxyUrl: "https://corsproxy.io/?url=",
-          },
+          type: "datetime",
         },
       ],
     },
     {
       align: "right",
-      width: 1,
+      width: "auto",
       components: [
         {
-          type: "media",
+          type: "cpu",
+        },
+        {
+          type: "memory",
+        },
+        {
+          type: "battery",
         },
         {
           type: "network",
-        },
-        {
-          type: "vpn",
-        },
-        {
-          type: "datetime",
         },
       ],
     },
@@ -99,7 +55,7 @@ const defaultLayout: Layout = {
 render(() => <App />, document.getElementById("root")!);
 
 function App() {
-  const persistKey = "zrp:layout:glazewm";
+  const persistKey = "nord:layout:glazewm:v3";
   let initial = defaultLayout;
   try {
     const saved = localStorage.getItem(persistKey);

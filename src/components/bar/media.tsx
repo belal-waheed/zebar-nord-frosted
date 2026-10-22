@@ -1,7 +1,17 @@
 import { cn } from "../../lib/utils";
-import { Match, Show, Switch, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import {
+  Match,
+  Show,
+  Switch,
+  createEffect,
+  createMemo,
+  createSignal,
+  onCleanup,
+  onMount,
+} from "solid-js";
 import { useProviders } from "../../lib/providers-context";
 import type { MediaSession } from "zebar";
+import { Music, SkipBack, Play, Pause, SkipForward } from "lucide-solid";
 
 function isMainMediaSession(s: MediaSession | null | undefined): boolean {
   if (!s) return false;
@@ -30,12 +40,10 @@ function Media() {
     const all = m.allSessions || [];
     const validSessions = all.filter(isMainMediaSession);
 
-    // 1. If currently locked onto a session, keep it as long as it exists in validSessions
     const currentLockedId = lockedSessionId();
     if (currentLockedId) {
       const lockedMatch = validSessions.find((s) => s.sessionId === currentLockedId);
       if (lockedMatch) {
-        // If another main session starts playing AND lockedMatch is paused, switch
         const anotherPlaying = validSessions.find(
           (s) => s.sessionId !== currentLockedId && s.isPlaying
         );
@@ -45,20 +53,17 @@ function Media() {
       }
     }
 
-    // 2. Prefer currentSession if valid
     if (m.currentSession && isMainMediaSession(m.currentSession)) {
       setLockedSessionId(m.currentSession.sessionId);
       return m.currentSession;
     }
 
-    // 3. Find any actively playing main session
     const playing = validSessions.find((s) => s.isPlaying);
     if (playing) {
       setLockedSessionId(playing.sessionId);
       return playing;
     }
 
-    // 4. Fallback to first valid session
     const fallback = validSessions[0] || null;
     if (fallback) {
       setLockedSessionId(fallback.sessionId);
@@ -69,7 +74,7 @@ function Media() {
     return fallback;
   });
 
-  // Position interpolation for background tabs (when Chrome throttles position updates)
+  // Position interpolation for background tabs
   const [localPos, setLocalPos] = createSignal(0);
   let lastFetchTime = Date.now();
   let basePosition = 0;
@@ -98,14 +103,36 @@ function Media() {
 
   const isPlaying = () => Boolean(session()?.isPlaying);
 
+  // Keep visible briefly after pausing to allow resume/interaction
+  const [recentlyPaused, setRecentlyPaused] = createSignal(false);
+  let pauseTimer: any = null;
+
+  createEffect(() => {
+    if (isPlaying()) {
+      if (pauseTimer) clearTimeout(pauseTimer);
+      setRecentlyPaused(true);
+    } else {
+      pauseTimer = setTimeout(() => {
+        setRecentlyPaused(false);
+      }, 5000);
+    }
+  });
+
+  onCleanup(() => {
+    if (pauseTimer) clearTimeout(pauseTimer);
+  });
+
+  const shouldShow = () => Boolean(session() && (isPlaying() || recentlyPaused()));
+
   const getTitle = () => {
-    const t = session()?.title;
+    const t = session()?.title?.trim();
     if (!t) return "Unknown Title";
-    return t.length > 25 ? t.slice(0, 25).trim() + "..." : t;
+    return t.length > 20 ? `${t.slice(0, 18)}...` : t;
   };
 
   const getArtist = () => {
-    return session()?.artist?.trim() || "";
+    const a = session()?.artist?.trim() || "";
+    return a.length > 15 ? `${a.slice(0, 13)}...` : a;
   };
 
   const getProgressPercent = () => {
@@ -117,21 +144,24 @@ function Media() {
     return Math.min(100, Math.max(0, pct));
   };
 
-  const togglePlayPause = () => {
+  const togglePlayPause = (e: MouseEvent) => {
+    e.stopPropagation();
     const m = mediaSig();
     const s = session();
     if (!m || !s) return;
     m.togglePlayPause({ sessionId: s.sessionId });
   };
 
-  const playPrevious = () => {
+  const playPrevious = (e: MouseEvent) => {
+    e.stopPropagation();
     const m = mediaSig();
     const s = session();
     if (!m || !s) return;
     m.previous({ sessionId: s.sessionId });
   };
 
-  const playNext = () => {
+  const playNext = (e: MouseEvent) => {
+    e.stopPropagation();
     const m = mediaSig();
     const s = session();
     if (!m || !s) return;
@@ -139,33 +169,26 @@ function Media() {
   };
 
   return (
-    <Show when={session()}>
+    <Show when={shouldShow()}>
       <div
         class={cn(
-          "h-8 flex group items-center justify-center overflow-hidden gap-2 text-[var(--media)] bg-[var(--media)]/10 rounded-full pr-3 pl-4 relative cursor-pointer"
+          "h-6 flex group items-center justify-center overflow-hidden gap-1.5 text-[#ec4899] bg-[#ec4899]/15 border border-[#ec4899]/30 rounded-md px-2 relative cursor-pointer select-none transition-all duration-200"
         )}
       >
-        <Switch>
-          <Match when={isPlaying()}>
-            <i class="nf nf-md-music text-lg"></i>
-          </Match>
-          <Match when={!isPlaying()}>
-            <i class="nf nf-md-music_off text-lg"></i>
-          </Match>
-        </Switch>
+        <Music size={13} class={cn("shrink-0", isPlaying() && "animate-pulse")} />
 
-        <div class="flex items-center gap-2 group-hover:translate-y-6 group-hover:opacity-0 transition-all duration-300">
-          <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1.5 group-hover:translate-y-6 group-hover:opacity-0 transition-all duration-200">
+          <div class="flex items-center gap-1 text-xs">
             <Show when={getArtist()}>
-              <span class="text-sm">{getArtist()}</span>
-              <span class="text-sm">-</span>
+              <span class="text-[#d4d4d8] font-medium">{getArtist()}</span>
+              <span class="text-zinc-500">-</span>
             </Show>
-            <span class="text-sm">{getTitle()}</span>
+            <span class="text-[#f4f4f5] font-semibold">{getTitle()}</span>
           </div>
 
-          <div class="w-12 h-2 bg-[var(--media)]/40 rounded-full relative overflow-hidden">
+          <div class="w-8 h-1 bg-[#ec4899]/20 rounded-full relative overflow-hidden">
             <div
-              class="h-full bg-[var(--media)] rounded-full transition-all duration-300"
+              class="h-full bg-[#ec4899] rounded-full transition-all duration-300"
               style={{
                 width: `${getProgressPercent()}%`,
               }}
@@ -173,33 +196,30 @@ function Media() {
           </div>
         </div>
 
-        <div class="transition-all -translate-y-6 duration-300 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 absolute left-12 right-0 w-auto">
-          <div class="flex flex-1 w-full h-full text-lg items-center gap-1 justify-between">
+        <div class="transition-all -translate-y-6 duration-200 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 absolute inset-0 flex items-center justify-center bg-[rgba(18,17,26,0.95)] px-2">
+          <div class="flex items-center gap-1 justify-center w-full">
             <button
               onClick={playPrevious}
-              class="flex-1 min-w-0 w-full h-8 aspect-square hover:bg-current/10 rounded-full flex items-center justify-center transition-all duration-300"
-              title="Previous"
+              class="p-1 hover:text-[#f4f4f5] rounded-sm transition-colors"
+              title="Previous Track"
             >
-              <i class="ti ti-player-skip-back text-xl"></i>
+              <SkipBack size={13} />
             </button>
             <button
               onClick={togglePlayPause}
-              class="flex-1 min-w-0 w-full h-8 aspect-square hover:bg-current/10 rounded-full flex items-center justify-center transition-all duration-300"
+              class="p-1 hover:text-[#f4f4f5] rounded-sm transition-colors"
               title={isPlaying() ? "Pause" : "Play"}
             >
-              <Show
-                when={isPlaying()}
-                fallback={<i class="ti ti-player-play text-xl"></i>}
-              >
-                <i class="ti ti-player-pause text-xl"></i>
+              <Show when={isPlaying()} fallback={<Play size={13} />}>
+                <Pause size={13} />
               </Show>
             </button>
             <button
               onClick={playNext}
-              class="flex-1 min-w-0 w-full h-8 aspect-square hover:bg-current/10 rounded-full flex items-center justify-center transition-all duration-300"
-              title="Next"
+              class="p-1 hover:text-[#f4f4f5] rounded-sm transition-colors"
+              title="Next Track"
             >
-              <i class="ti ti-player-skip-forward text-xl"></i>
+              <SkipForward size={13} />
             </button>
           </div>
         </div>

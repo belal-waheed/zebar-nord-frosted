@@ -7,8 +7,8 @@ import ConfigMenu from "./components/config-menu";
 import RssWindow from "./components/rss-window";
 
 const defaultLayout: Layout = {
-  topMargin: 4,
-  xMargin: 4,
+  topMargin: 0,
+  xMargin: 0,
   columns: [
     {
       align: "left",

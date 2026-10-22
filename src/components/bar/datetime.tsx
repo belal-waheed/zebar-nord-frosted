@@ -1,5 +1,6 @@
 import { cn } from "../../lib/utils";
 import { createSignal, createEffect, onCleanup } from "solid-js";
+import { Clock } from "lucide-solid";
 
 function Datetime(props: { noIcon?: boolean }) {
   const [now, setNow] = createSignal(new Date());
@@ -11,32 +12,26 @@ function Datetime(props: { noIcon?: boolean }) {
     onCleanup(() => clearInterval(interval));
   });
 
-  // Format: ddd dd MMM hh:mm
+  // Format: 'Wed Oct 21 • 21:05'
   function formattedDateTime() {
     const date = now();
-    const weekday = date.toLocaleDateString(undefined, { weekday: "short" });
-    const day = date.toLocaleDateString(undefined, { day: "2-digit" });
-    const month = date.toLocaleDateString(undefined, { month: "short" });
-    const hour = date.toLocaleTimeString(undefined, {
-      hour12: false,
-      hour: "2-digit",
-    });
-    let minute = date.getMinutes();
-    const minuteStr = minute < 10 ? `0${minute}` : `${minute}`;
+    const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
+    const month = date.toLocaleDateString("en-US", { month: "short" });
+    const day = date.getDate();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
 
-    return `${weekday} ${day} ${month} ${hour}:${minuteStr}`;
+    return `${weekday} ${month} ${day} • ${hours}:${minutes}`;
   }
 
   return (
     <div
       class={cn(
-        "h-8 flex items-center transition-all duration-300 justify-center overflow-hidden gap-2 text-[var(--memory)] bg-[var(--memory)]/10 rounded-full pr-3 pl-4 relative"
+        "h-6 px-2.5 rounded-md flex items-center justify-center gap-1.5 bg-white/5 border border-white/5 text-xs text-[#f4f4f5] font-medium select-none"
       )}
     >
-      {!props.noIcon && <i class="ti ti-clock text-lg"></i>}
-      <div class="rounded-full text-base font-semibold">
-        {formattedDateTime()}
-      </div>
+      {!props.noIcon && <Clock size={13} class="text-[#8b5cf6] shrink-0" />}
+      <span class="tracking-tight whitespace-nowrap">{formattedDateTime()}</span>
     </div>
   );
 }

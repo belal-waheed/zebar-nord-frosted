@@ -1,123 +1,157 @@
 @import "tailwindcss";
 
-@import "https://www.nerdfonts.com/assets/css/webfont.css";
-@import "https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css";
-
 :root {
   /* ==========================================
-     Nord Theme Palette (Official Guide)
+     Obsidian & Electric Violet Palette
+     (Vegeta Ultra Ego Aesthetic)
      ========================================== */
+  --obsidian-bg: rgba(18, 17, 26, 0.94);
+  --aura-border: rgba(139, 92, 246, 0.35);
+  --aura-glow: 0 4px 16px rgba(139, 92, 246, 0.15);
+  --violet-primary: #8b5cf6;
+  --magenta-accent: #ec4899;
+  --cpu-purple: #a78bfa;
+  --ram-magenta: #f472b6;
 
-  /* Polar Night: Dark background and base colors */
-  --nord-0: #2e3440; /* Base background */
-  --nord-1: #3b4252; /* Elevated panels / widgets bg */
-  --nord-2: #434c5e; /* Borders and selections */
-  --nord-3: #4c566a; /* Muted text / comments / disabled */
+  /* Polar Night / Obsidian dark background and base colors */
+  --nord0: #12111a;
+  --nord1: #1a1926;
+  --nord2: #252336;
+  --nord3: #4c4669;
 
   /* Snow Storm: Text and bright typography */
-  --nord-4: #d8dee9; /* Primary text / body typography */
-  --nord-5: #e5e9f0; /* Elevated / hover text */
-  --nord-6: #eceff4; /* Active / highlighted text */
+  --nord4: #d4d4d8;
+  --nord5: #e4e4e7;
+  --nord6: #f4f4f5;
 
-  /* Frost: Accents and cold status indicators */
-  --nord-7: #8fbcbb; /* Teal - Network / success */
-  --nord-8: #88c0d0; /* Ice Blue - Standard icons / primary accent */
-  --nord-9: #81a1c1; /* Soft Blue - Secondary accents / memory stats */
-  --nord-10: #5e81ac; /* Deep Blue - Tertiary accents / battery base */
+  /* Electric & Aura Accents */
+  --nord7: #c084fc;
+  --nord8: #8b5cf6;
+  --nord9: #a78bfa;
+  --nord10: #7c3aed;
 
-  /* Aurora: Multi-color status indicators and alerts */
-  --nord-11: #bf616a; /* Red - Error / high CPU / battery low */
-  --nord-12: #d08770; /* Orange - Warning / RSS feed */
-  --nord-13: #ebcb8b; /* Yellow - Attention / battery mid */
-  --nord-14: #a3be8c; /* Green - Success / normal CPU / battery good */
-  --nord-15: #b48ead; /* Purple - Media / secondary actions */
+  /* Energy status indicators and alerts */
+  --nord11: #f87171;
+  --nord12: #fb923c;
+  --nord13: #fbbf24;
+  --nord14: #4ade80;
+  --nord15: #ec4899;
 
-  /* ==========================================
-     Theme Mappings
-     ========================================== */
-  --text: var(--nord-4);
-  --bg: var(--nord-0);
-  --border: var(--nord-2);
-  --icon: var(--nord-8);
-  --memory: var(--nord-9);
-  --cpu: var(--nord-14);
-  --cpu-high-usage: var(--nord-11);
-  --battery: var(--nord-10);
-  --battery-good: var(--nord-14);
-  --battery-mid: var(--nord-13);
-  --battery-low: var(--nord-11);
-  --media: var(--nord-15);
-  --network: var(--nord-7);
-  --vpn: var(--nord-9);
-  --rss: var(--nord-12);
-  --weather: var(--nord-8);
+  /* Legacy Hyphenated Aliases for Backwards Compatibility */
+  --nord-0: var(--nord0);
+  --nord-1: var(--nord1);
+  --nord-2: var(--nord2);
+  --nord-3: var(--nord3);
+  --nord-4: var(--nord4);
+  --nord-5: var(--nord5);
+  --nord-6: var(--nord6);
+  --nord-7: var(--nord7);
+  --nord-8: var(--nord8);
+  --nord-9: var(--nord9);
+  --nord-10: var(--nord10);
+  --nord-11: var(--nord11);
+  --nord-12: var(--nord12);
+  --nord-13: var(--nord13);
+  --nord-14: var(--nord14);
+  --nord-15: var(--nord15);
 
-  /* Workspaces (Spectrum starting with Frost into Aurora) */
-  --ws-1: var(--nord-8);  /* Ice Blue */
-  --ws-2: var(--nord-9);  /* Soft Blue */
-  --ws-3: var(--nord-10); /* Deep Blue */
-  --ws-4: var(--nord-7);  /* Teal */
-  --ws-5: var(--nord-14); /* Green */
-  --ws-6: var(--nord-13); /* Yellow */
-  --ws-7: var(--nord-12); /* Orange */
-  --ws-8: var(--nord-11); /* Red */
-  --ws-9: var(--nord-15); /* Purple */
+  /* Theme Mappings */
+  --text: var(--nord6);
+  --bg: var(--obsidian-bg);
+  --border: var(--aura-border);
+  --icon: var(--violet-primary);
+  --memory: var(--ram-magenta);
+  --cpu: var(--cpu-purple);
+  --cpu-high-usage: var(--nord11);
+  --battery: var(--nord7);
+  --battery-good: var(--nord14);
+  --battery-mid: var(--nord13);
+  --battery-low: var(--nord11);
+  --media: var(--magenta-accent);
+  --network: var(--nord7);
+  --vpn: var(--cpu-purple);
+  --rss: var(--magenta-accent);
+  --weather: var(--violet-primary);
 
-  /* Base background color for active text contrast */
-  --base: var(--nord-0);
-  --rp-base: var(--nord-0); /* Fallback */
+  /* Workspaces */
+  --ws-1: var(--violet-primary);
+  --ws-2: var(--cpu-purple);
+  --ws-3: var(--nord10);
+  --ws-4: var(--nord7);
+  --ws-5: var(--nord14);
+  --ws-6: var(--nord13);
+  --ws-7: var(--nord12);
+  --ws-8: var(--nord11);
+  --ws-9: var(--magenta-accent);
+
+  --base: var(--nord0);
+  --rp-base: var(--nord0);
+
+  /* Frosted Glass Tokens */
+  --glass-bg: var(--obsidian-bg);
+  --glass-border: var(--aura-border);
+  --glass-blur: 12px;
 }
 
 @theme {
   --animate-flash: flash 1s infinite;
   @keyframes flash {
-      from { opacity: 1.0; }
-      50% { opacity: 0.5; }
-      to { opacity: 1.0; }
+    from { opacity: 1.0; }
+    50% { opacity: 0.5; }
+    to { opacity: 1.0; }
   }
 
-  
   --animate-charging: battery-charge 2.1s ease-in-out infinite;
   --battery-percent: var(--tw-battery-width, 0%);
   @keyframes battery-charge {
-    0% {
-      width: var(--tw-battery-width);
-    }
-    10% {
-      width: var(--tw-battery-width);
-    }
-    60% {
-      width: 100%;
-    }
-    99% {
-      width: 100%;
-    }
-    100% {
-      width: var(--tw-battery-width);
-    }
+    0% { width: var(--tw-battery-width); }
+    10% { width: var(--tw-battery-width); }
+    60% { width: 100%; }
+    99% { width: 100%; }
+    100% { width: var(--tw-battery-width); }
   }
 }
 
+.obsidian-island {
+  background: rgba(18, 17, 26, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 4px 16px 0 rgba(139, 92, 246, 0.15);
+  border-radius: 8px;
+}
+
+.frosted-glass {
+  background: rgba(18, 17, 26, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 4px 16px 0 rgba(139, 92, 246, 0.15);
+}
 
 body {
-  font-family: "SF Mono", ui-monospace, monospace;
+  font-family: 'Cascadia Code', 'Geist Mono', ui-monospace, monospace;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   overflow: hidden;
-  background: transparent;
+  background: transparent !important;
+  color: var(--nord6);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html,
 body,
 #root {
   height: 100%;
-  background: transparent;
+  background: transparent !important;
 }
 
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: transparent !important;
 }
 
 .systray-icon {
@@ -128,4 +162,7 @@ body,
 
 button {
   cursor: pointer;
+  background: transparent;
+  border: none;
+  outline: none;
 }

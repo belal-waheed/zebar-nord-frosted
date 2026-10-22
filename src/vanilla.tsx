@@ -7,8 +7,8 @@ import RssWindow from "./components/rss-window";
 import { createSignal, Show } from "solid-js";
 
 const defaultLayout: Layout = {
-  topMargin: 4,
-  xMargin: 4,
+  topMargin: 0,
+  xMargin: 0,
   columns: [
     {
       align: "left",

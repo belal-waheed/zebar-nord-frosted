@@ -1,33 +1,25 @@
 import { cn } from "../../lib/utils";
+import { JSX } from "solid-js";
 
-const Background = ({
-  children,
-  align = "center",
-  corners = ["top-left", "top-right", "bottom-left", "bottom-right"],
-}: {
-  children;
+interface BackgroundProps {
+  children: JSX.Element;
   align?: "left" | "center" | "right";
   corners?: ("top-left" | "top-right" | "bottom-left" | "bottom-right")[];
-}) => {
+}
+
+const Background = (props: BackgroundProps) => {
   return (
     <div
-      class={cn("flex justify-center", {
-        "justify-start": align === "left",
-        "justify-center": align === "center",
-        "justify-end": align === "right",
-      })}
+      class={cn(
+        "obsidian-island px-3 py-1 flex items-center h-[30px] rounded-lg gap-2",
+        {
+          "justify-start": props.align === "left",
+          "justify-center": props.align === "center",
+          "justify-end": props.align === "right",
+        }
+      )}
     >
-      <div
-        class={cn(
-          "h-10 flex gap-1 items-center bg-[var(--bg)] border border-[var(--border)] w-fit font-extrabold px-1",
-          corners.includes("top-left") && "rounded-tl-full",
-          corners.includes("top-right") && "rounded-tr-full",
-          corners.includes("bottom-left") && "rounded-bl-full",
-          corners.includes("bottom-right") && "rounded-br-full"
-        )}
-      >
-        {children}
-      </div>
+      {props.children}
     </div>
   );
 };

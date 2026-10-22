@@ -1,33 +1,40 @@
-import { cn, openBtop } from "../../lib/utils";
+import { cn, openTaskManager } from "../../lib/utils";
 import { Show, createEffect, createSignal } from "solid-js";
 import { useProviders } from "../../lib/providers-context";
+import { MemoryStick } from "lucide-solid";
 
 function Memory() {
   const { memory, glazewm } = useProviders();
   const [memorySig, setMemorySig] = createSignal(memory());
   createEffect(() => setMemorySig(memory()));
 
+  const memoryStats = () => {
+    const mem = memorySig();
+    if (!mem || !mem.totalMemory) return { percent: 0, usedGb: "0.0", totalGb: "0" };
+    const percent = Math.round((mem.usedMemory / mem.totalMemory) * 100);
+    const usedGb = (mem.usedMemory / 1073741824).toFixed(1);
+    const totalGb = (mem.totalMemory / 1073741824).toFixed(0);
+    return { percent, usedGb, totalGb };
+  };
+
   return (
     <Show when={memorySig()}>
       <div
         class={cn(
-          "h-8 flex group items-center justify-center overflow-hidden gap-2 text-[var(--memory)] bg-[var(--memory)]/10 rounded-full pr-3 pl-4 relative cursor-pointer"
+          "h-6 px-2 rounded-md flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer text-xs select-none transition-colors duration-150 group"
         )}
-        onClick={() => openBtop(glazewm())}
+        onClick={() => openTaskManager(glazewm())}
+        title={`RAM Usage: ${memoryStats().usedGb} GB / ${memoryStats().totalGb} GB (${memoryStats().percent}%) (Click to open Task Manager)`}
       >
-        <i class="nf nf-fa-memory text-lg"></i>
-        <div class="w-12 h-2 bg-[var(--memory)]/40 rounded-full relative overflow-hidden group-hover:translate-y-6 group-hover:opacity-0 transition-all duration-300">
+        <MemoryStick size={13} class="shrink-0 text-[#f472b6]" />
+        <div class="w-8 h-1.5 bg-white/10 rounded-full overflow-hidden">
           <div
-            class="h-full bg-[var(--memory)] rounded-full"
-            style={{
-              width: `${
-                (memorySig()!.usedMemory / memorySig()!.totalMemory) * 100
-              }%`,
-            }}
-          ></div>
+            class="h-full bg-[#f472b6] rounded-full transition-all duration-300"
+            style={{ width: `${Math.min(100, Math.max(0, memoryStats().percent))}%` }}
+          />
         </div>
-        <span class="transition-all -translate-y-6 duration-300 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 absolute left-12 text-base">
-          {(memorySig()!.usedMemory / 1000000000).toFixed(0)}GB
+        <span class="text-[#f4f4f5] font-medium text-[11px] min-w-[28px]">
+          {memoryStats().usedGb}G
         </span>
       </div>
     </Show>

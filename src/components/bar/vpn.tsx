@@ -2,6 +2,7 @@ import { cn } from "../../lib/utils";
 import { createSignal, createEffect, onCleanup, Show } from "solid-js";
 import { shellExec } from "zebar";
 import { useProviders } from "../../lib/providers-context";
+import { Shield, ShieldCheck } from "lucide-solid";
 
 interface VpnStatus {
   connected: boolean;
@@ -161,18 +162,20 @@ function Vpn() {
     <Show when={status().connected}>
       <div
         class={cn(
-          "h-8 flex items-center transition-all duration-300 justify-center overflow-hidden gap-2 text-[var(--vpn)] bg-[var(--vpn)]/10 rounded-full px-3 relative cursor-pointer"
+          "h-6 px-2 rounded-md flex items-center justify-center gap-1.5 bg-white/5 border border-white/5 text-xs text-[#f4f4f5] select-none transition-colors duration-150 cursor-pointer"
         )}
         title={status().name || (status().tailscale ? "Tailscale Connected" : "VPN Connected")}
         onClick={checkVpn}
       >
-        <Show
-          when={status().tailscale}
-          fallback={<i class="ti ti-shield-lock text-lg"></i>}
-        >
-          <i class="ti ti-shield-check text-lg"></i>
-        </Show>
-        <span class="text-sm font-semibold">
+        <div class="shrink-0 text-[#a78bfa]">
+          <Show
+            when={status().tailscale}
+            fallback={<Shield size={13} />}
+          >
+            <ShieldCheck size={13} />
+          </Show>
+        </div>
+        <span class="font-medium text-[11px] truncate max-w-[80px]">
           {status().name || (status().tailscale ? "Tailscale" : "VPN")}
         </span>
       </div>
